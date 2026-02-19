@@ -1,22 +1,28 @@
-import styles from './layout.module.css';
+import './header.css';
 
 export default function Header() {
     return (
-        <header className={styles.header}>
-            <div className={styles.searchBar}>
-                <span className={styles.searchIcon}>🔍</span>
-                <input type="text" placeholder="Search menu items..." className={styles.searchInput} />
-            </div>
-            <div className={styles.headerActions}>
-                <button className={styles.actionBtn}>
-                    <span className={styles.icon}>🔔</span>
-                </button>
-                <button className={styles.actionBtn}>
-                    <span className={styles.icon}>💬</span>
-                </button>
-                <div className={styles.statusBadge}>
-                    <span className={styles.statusDot}></span>
-                    Online
+        <header className="header">
+            <div className="header-container">
+                <div className="search-bar">
+                    <span className="search-icon">🔍</span>
+                    <input
+                        type="text"
+                        placeholder="Search menu items..."
+                        className="search-input"
+                    />
+                </div>
+                <div className="header-actions">
+                    <button className="icon-button">
+                        <span>🔔</span>
+                    </button>
+                    <button className="icon-button">
+                        <span>💬</span>
+                    </button>
+                    <div className="status-indicator">
+                        <span className="status-dot"></span>
+                        Online
+                    </div>
                 </div>
             </div>
         </header>

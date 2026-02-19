@@ -39,3 +39,53 @@ export const categories = [
     'Sweets',
     'Good Morning'
 ];
+
+export const externalOrders: any[] = [
+    {
+        id: 'EXT-001',
+        source: 'Zomato',
+        items: [
+            { id: 1, name: 'Paneer Butter Masala', price: 280, quantity: 1, category: 'North Indian', image: '🥘' },
+            { id: 3, name: 'Butter Naan', price: 40, quantity: 2, category: 'North Indian', image: '🫓' }
+        ],
+        subtotal: 360,
+        taxes: 18,
+        total: 378,
+        status: 'Pending',
+        timestamp: new Date().toISOString(),
+        customerName: 'Rahul Sharma',
+        customerPhone: '9876543210',
+        address: 'Sector 44, Gurgaon'
+    },
+    {
+        id: 'EXT-002',
+        source: 'Swiggy',
+        items: [
+            { id: 4, name: 'Masala Dosa', price: 120, quantity: 2, category: 'South Indian', image: '🥞' }
+        ],
+        subtotal: 240,
+        taxes: 12,
+        total: 252,
+        status: 'Preparing',
+        timestamp: new Date().toISOString(),
+        customerName: 'Anita Gupta',
+        customerPhone: '9123456789',
+        address: 'Hauz Khas Village'
+    },
+    {
+        id: 'EXT-003',
+        source: 'Website',
+        items: [
+            { id: 7, name: 'Cheese Burst Pizza', price: 450, quantity: 1, category: 'Cheese', image: '🍕' },
+            { id: 8, name: 'Cheese Garlic Bread', price: 160, quantity: 1, category: 'Cheese', image: '🥖' }
+        ],
+        subtotal: 610,
+        taxes: 30.5,
+        total: 640.5,
+        status: 'Ready',
+        timestamp: new Date().toISOString(),
+        customerName: 'Sanjay Verma',
+        customerPhone: '8888888888',
+        address: 'DLF Phase 3, Gurgaon'
+    }
+];
