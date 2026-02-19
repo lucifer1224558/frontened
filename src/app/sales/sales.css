@@ -1,0 +1,181 @@
+/* Sales page styles */
+
+.sales-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.sales-header h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 32px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background-color: #FFFFFF;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid #E2E8F0;
+}
+
+.stat-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748B;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0F172A;
+    display: block;
+}
+
+.stat-growth {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.growth-positive {
+    color: #10B981;
+}
+
+.growth-negative {
+    color: #EF4444;
+}
+
+.stat-info {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+    color: #6B7280;
+}
+
+.progress-bar-container {
+    height: 10px;
+    background-color: #F1F5F9;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin: 8px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #10B981;
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+@media (min-width: 1024px) {
+    .insights-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+.table-card {
+    background-color: #FFFFFF;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid #E2E8F0;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #1E293B;
+}
+
+.transaction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.transaction-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.transaction-row:last-child {
+    border-bottom: none;
+}
+
+.order-info h4 {
+    font-weight: 600;
+    color: #334155;
+}
+
+.order-metadata {
+    font-size: 12px;
+    color: #64748B;
+}
+
+.order-total-text {
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.category-sales-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.category-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.category-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.category-name-text {
+    color: #475569;
+}
+
+.category-value-text {
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.mini-progress-bg {
+    height: 8px;
+    background-color: #F1F5F9;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.mini-progress-fill {
+    height: 100%;
+    background-color: #2563EB;
+    border-radius: 9999px;
+}

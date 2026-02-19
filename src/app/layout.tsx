@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/component/Sidebar";
 import Header from "@/component/Header";
-import styles from "@/component/layout.module.css";
+import { CartProvider } from "@/context/CartContext";
+import { MenuProvider } from "@/context/MenuContext";
+
+const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "POS Pro - Premium Restaurant Management",
@@ -16,14 +20,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <Sidebar />
-        <div className={styles.mainContainer}>
-          <Header />
-          <main className={styles.content}>
-            {children}
-          </main>
-        </div>
+      <body className={outfit.className}>
+        <CartProvider>
+          <MenuProvider>
+            <div className="flex flex-col h-screen overflow-hidden bg-[#F4F7F9] p-4 gap-4">
+              <Sidebar />
+              <main className="flex-1 overflow-y-auto bg-white rounded-[2rem] shadow-sm border border-black/5 p-8 min-w-0">
+                {children}
+              </main>
+            </div>
+          </MenuProvider>
+        </CartProvider>
       </body>
     </html>
   );

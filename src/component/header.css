@@ -1,0 +1,113 @@
+/* Header Styles */
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    display: flex;
+    height: 70px;
+    width: 100%;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: #FFFFFF;
+    padding: 0 32px;
+}
+
+.header-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Search Bar */
+.search-bar {
+    display: flex;
+    width: 400px;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+    background-color: #F4F7F9;
+    padding: 8px 16px;
+}
+
+.search-icon {
+    font-size: 16px;
+    color: #636E72;
+}
+
+.search-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    outline: none;
+    color: #2D3436;
+}
+
+.search-input::placeholder {
+    color: #636E72;
+}
+
+/* Header UI Elements */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon-button {
+    display: flex;
+    height: 40px;
+    width: 40px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background-color: #F4F7F9;
+    color: #636E72;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.icon-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #F97316;
+}
+
+.icon-button span {
+    font-size: 20px;
+}
+
+/* Status Indicator */
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 9999px;
+    background-color: rgba(16, 185, 129, 0.1);
+    padding: 4px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #059669;
+}
+
+.status-dot {
+    height: 8px;
+    width: 8px;
+    border-radius: 9999px;
+    background-color: #10B981;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .5;
+    }
+}
