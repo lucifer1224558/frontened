@@ -1,34 +1,37 @@
 'use client';
 
 import { useCart } from '@/context/CartContext';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import './billing.css';
+import { useEffect, useState } from 'react';
+import '../billing.css';
 
-export default function BillingPage() {
-    const { bills, editBill, deleteBill, markAsBilled } = useCart();
-    const router = useRouter();
+export default function BilledHistoryPage() {
+    const { paidBills, refreshPaidBills, deleteBill } = useCart();
     const [searchTerm, setSearchTerm] = useState('');
+    const [searchDate, setSearchDate] = useState('');
 
-    const pendingBills = bills.filter(bill => {
-        const matchesType = !bill.billed;
-        const matchesSearch = bill.tableNo?.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesType && matchesSearch;
+    useEffect(() => {
+        refreshPaidBills();
+    }, []);
+
+    const filteredHistory = paidBills.filter(bill => {
+        const matchesBillNo = (bill.orderNo || bill._id || bill.id || '')
+            .toString()
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+
+        const billDate = new Date(bill.createdAt || bill.timestamp || Date.now()).toISOString().split('T')[0];
+        const matchesDate = searchDate ? billDate === searchDate : true;
+
+        return matchesBillNo && matchesDate;
     });
 
-    const handleEdit = (bill: any) => {
-        editBill(bill);
-        router.push('/dashboard');
-    };
-
     const handleDelete = (id: string) => {
-        if (window.confirm('Are you sure you want to delete this bill?')) {
+        if (window.confirm('Are you sure you want to delete this bill from history?')) {
             deleteBill(id);
         }
     };
 
-    const handlePrint = (id: string) => {
-        markAsBilled(id);
+    const handlePrint = () => {
         window.print();
     };
 
@@ -36,34 +39,53 @@ export default function BillingPage() {
         <div className="billing-container">
             <header className="billing-header">
                 <div>
-                    <h1>Pending Bills</h1>
-                    <p>Manage and review active guest bills</p>
+                    <h1>Billed History</h1>
+                    <p>Review and manage all finalized guest bills</p>
                 </div>
-                <div className="billing-search-container">
-                    <span className="search-icon">🔍</span>
-                    <input
-                        type="text"
-                        placeholder="Search Table No..."
-                        className="billing-search-input"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                <div className="billing-search-group">
+                    <div className="search-input-wrapper">
+                        <span className="search-icon">🔍</span>
+                        <input
+                            type="text"
+                            placeholder="Search Bill No..."
+                            className="billing-search-input"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <div className="search-input-wrapper">
+                        <span className="search-icon">📅</span>
+                        <input
+                            type="date"
+                            className="billing-date-input"
+                            value={searchDate}
+                            onChange={(e) => setSearchDate(e.target.value)}
+                        />
+                    </div>
+                    {(searchTerm || searchDate) && (
+                        <button
+                            className="btn-clear-filters"
+                            onClick={() => { setSearchTerm(''); setSearchDate(''); }}
+                        >
+                            Clear
+                        </button>
+                    )}
                 </div>
             </header>
 
             <div className="bills-grid">
-                {pendingBills.length === 0 ? (
+                {filteredHistory.length === 0 ? (
                     <div className="empty-bills">
                         <div style={{ fontSize: '60px', marginBottom: '16px' }}>🧾</div>
                         <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#1E293B' }}>
-                            {searchTerm ? `No bills found for table "${searchTerm}"` : 'No bills found'}
+                            {searchTerm || searchDate ? 'No results match your search' : 'No billed history found'}
                         </p>
                         <p style={{ marginTop: '4px' }}>
-                            {searchTerm ? 'Try searching for a different table number.' : 'Generated bills will appear here for management.'}
+                            {searchTerm || searchDate ? 'Try adjusting your filters.' : 'Finalized bills will appear here for record keeping.'}
                         </p>
                     </div>
                 ) : (
-                    pendingBills.map((bill) => (
+                    filteredHistory.map((bill) => (
                         <div key={bill._id || bill.id} className="bill-card">
                             <div className="bill-accent"></div>
 
@@ -88,13 +110,13 @@ export default function BillingPage() {
                                         <span>📅</span>
                                         <span>{bill.createdAt ? new Date(bill.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
                                         <span style={{ opacity: 0.3 }}>•</span>
-                                        <span>{bill.createdAt ? new Date(bill.createdAt).toLocaleDateString() : 'Just now'}</span>
+                                        <span>{bill.createdAt ? new Date(bill.createdAt).toLocaleDateString() : 'N/A'}</span>
                                     </div>
                                 </div>
                                 <div className="table-badge">
                                     <span className="table-badge-label">Table</span>
                                     <span className="table-no-text">{bill.tableNo || 'N/A'}</span>
-                                    {bill.billed && <div className="billed-sticker">BILLED</div>}
+                                    <div className="billed-sticker">BILLED</div>
                                 </div>
                             </div>
 
@@ -131,18 +153,11 @@ export default function BillingPage() {
 
                                 <div className="bill-actions">
                                     <button
-                                        className="btn-billing-edit"
-                                        onClick={() => handleEdit(bill)}
-                                    >
-                                        <span>✏️</span>
-                                        Edit Bill
-                                    </button>
-                                    <button
                                         className="btn-billing-print"
-                                        onClick={() => handlePrint((bill._id || bill.id || '').toString())}
+                                        onClick={() => handlePrint()}
                                     >
                                         <span>🖨️</span>
-                                        Print
+                                        Reprint
                                     </button>
                                     <button
                                         className="btn-billing-delete"

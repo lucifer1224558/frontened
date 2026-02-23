@@ -10,9 +10,9 @@ interface MenuContextType {
     categories: string[];
     isLoading: boolean;
     error: string | null;
-    addItem: (item: Omit<Item, 'id'>) => Promise<void>;
+    addItem: (item: Omit<Item, '_id' | 'id'>) => Promise<void>;
     updateItem: (item: Item) => Promise<void>;
-    deleteItem: (id: number) => Promise<void>;
+    deleteItem: (id: string) => Promise<void>;
     refreshItems: () => Promise<void>;
 }
 
@@ -34,10 +34,13 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
             }
             const data = await response.json();
             setItems(data);
-            // Update categories if backend provides them, or derive from items
+            // Ensure 'All' is present and merge with backend categories
             if (data.length > 0) {
-                const uniqueCategories = ['All', ...Array.from(new Set(data.map((item: Item) => item.category))) as string[]];
+                const itemCategories = data.map((item: Item) => item.category);
+                const uniqueCategories = Array.from(new Set(['All', ...initialCategories, ...itemCategories])) as string[];
                 setCategories(uniqueCategories);
+            } else {
+                setCategories(['All', ...initialCategories]);
             }
         } catch (err) {
             console.error('Error fetching menu items:', err);
@@ -65,14 +68,35 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
         }
     }, [items]);
 
-    const addItem = (newItem: Omit<Item, 'id'>) => {
-        const id = items.length > 0 ? Math.max(...items.map(i => i.id)) + 1 : 1;
-        setItems(prev => [...prev, { ...newItem, id }]);
+    const addItem = async (newItem: Omit<Item, '_id' | 'id'>) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(API_ENDPOINTS.ITEMS, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newItem),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to add item: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            setItems(prev => [...prev, data]);
+        } catch (err) {
+            console.error('Error adding item:', err);
+            setError(err instanceof Error ? err.message : 'Failed to add item');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const updateItem = async (updatedItem: Item) => {
         try {
-            const response = await fetch(`${API_ENDPOINTS.ITEMS}/${updatedItem.id}`, {
+            const response = await fetch(`${API_ENDPOINTS.ITEMS}/${updatedItem._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,14 +107,14 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
                 throw new Error(`Failed to update item: ${response.statusText}`);
             }
             const data = await response.json();
-            setItems(prev => prev.map(item => item.id === updatedItem.id ? data : item));
+            setItems(prev => prev.map(item => item._id === updatedItem._id ? data : item));
         } catch (err) {
             console.error('Error updating item:', err);
             setError(err instanceof Error ? err.message : 'Failed to update item');
         }
     };
 
-    const deleteItem = async (id: number) => {
+    const deleteItem = async (id: string) => {
         try {
             const response = await fetch(`${API_ENDPOINTS.ITEMS}/${id}`, {
                 method: 'DELETE',
@@ -98,7 +122,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
             if (!response.ok) {
                 throw new Error(`Failed to delete item: ${response.statusText}`);
             }
-            setItems(prev => prev.filter(item => item.id !== id));
+            setItems(prev => prev.filter(item => item._id !== id));
         } catch (err) {
             console.error('Error deleting item:', err);
             setError(err instanceof Error ? err.message : 'Failed to delete item');

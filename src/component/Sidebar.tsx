@@ -2,19 +2,37 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import './sidebar.css';
 
 export default function Sidebar() {
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const pathname = usePathname();
+  const router = useRouter();
 
   const menuItems = [
     { name: 'Dashboard', icon: '📊', path: '/dashboard' },
-    { name: 'Billing', icon: '🧾', path: '/billing' },
+    {
+      name: 'Billing',
+      icon: '🧾',
+      path: '/billing',
+      subItems: [
+        { name: 'Pending Billed', path: '/billing' },
+        { name: 'Billed History', path: '/billing/history' }
+      ]
+    },
     { name: 'Orders', icon: '📦', path: '/orders' },
     { name: 'Menu', icon: '🍴', path: '/menu' },
     { name: 'SalesInsight', icon: '⚙️', path: '/sales' },
   ];
+
+  const handleItemClick = (item: any) => {
+    if (item.subItems) {
+      setExpandedItem(expandedItem === item.name ? null : item.name);
+    } else {
+      router.push(item.path);
+    }
+  };
 
   return (
     <nav className="navbar">
@@ -28,16 +46,41 @@ export default function Sidebar() {
 
         <div className="navbar-nav">
           {menuItems.map((item) => {
-            const isActive = pathname === item.path;
+            const isActive = pathname === item.path || pathname.startsWith(item.path + '/');
+            const isExpanded = expandedItem === item.name;
+
             return (
-              <Link
-                key={item.name}
-                href={item.path}
-                className={`nav-item ${isActive ? 'nav-item-active' : ''}`}
-              >
-                <span className="nav-icon">{item.icon}</span>
-                <span className="nav-text">{item.name}</span>
-              </Link>
+              <div key={item.name} className="nav-group">
+                <div
+                  className={`nav-item ${isActive ? 'nav-item-active' : ''}`}
+                  onClick={() => handleItemClick(item)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  <span className="nav-text">{item.name}</span>
+                  {item.subItems && (
+                    <span className={`dropdown-arrow ${isExpanded ? 'arrow-up' : ''}`}>▼</span>
+                  )}
+                </div>
+
+                {item.subItems && isExpanded && (
+                  <div className="sub-nav">
+                    {item.subItems.map((sub) => {
+                      const isSubActive = pathname === sub.path;
+                      return (
+                        <Link
+                          key={sub.name}
+                          href={sub.path}
+                          className={`sub-nav-item ${isSubActive ? 'sub-nav-active' : ''}`}
+                          onClick={() => setExpandedItem(null)}
+                        >
+                          {sub.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
