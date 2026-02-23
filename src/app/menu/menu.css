@@ -3,8 +3,8 @@
 .menu-page-container {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    padding-bottom: 40px;
+    gap: 16px;
+    padding-bottom: 24px;
     min-width: 0;
 }
 
@@ -19,24 +19,91 @@
 }
 
 .menu-header-info h1 {
-    font-size: 36px;
-    font-weight: 900;
+    font-size: 24px;
+    font-weight: 800;
     color: #0F172A;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
     line-height: 1.2;
 }
 
 .menu-header-info p {
     color: #64748B;
     font-weight: 500;
-    font-size: 14px;
-    margin-top: 4px;
+    font-size: 13px;
+    margin-top: 2px;
 }
 
 .menu-header-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+}
+
+/* Search Bar Styles */
+.menu-search-bar {
+    position: relative;
+    flex: 2;
+    min-width: 200px;
+    max-width: 350px;
+}
+
+.menu-search-bar .search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #94A3B8;
+}
+
+.menu-search-bar .search-input {
+    width: 100%;
+    padding: 12px 16px 12px 48px;
+    border-radius: 16px;
+    border: 1px solid #F1F5F9;
+    background-color: #F8FAFC;
+    color: #0F172A;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.menu-search-bar .search-input:focus {
+    outline: none;
+    border-color: #2563EB;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1), 0 2px 4px -1px rgba(37, 99, 235, 0.06);
+}
+
+.menu-category-filter {
+    flex: 1;
+    min-width: 150px;
+    max-width: 200px;
+}
+
+.category-select {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    border: 1px solid #F1F5F9;
+    background-color: #F8FAFC;
+    color: #0F172A;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394A3B8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+}
+
+.category-select:focus {
+    outline: none;
+    border-color: #2563EB;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1), 0 2px 4px -1px rgba(37, 99, 235, 0.06);
 }
 
 /* Button Styles */
@@ -108,16 +175,16 @@
 
 .menu-table th {
     background-color: rgba(248, 250, 252, 0.5);
-    padding: 16px 24px;
+    padding: 12px 16px;
     font-size: 10px;
-    font-weight: 900;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.15em;
     color: #94A3B8;
 }
 
 .menu-table td {
-    padding: 16px 24px;
+    padding: 12px 16px;
     border-bottom: 1px solid #F1F5F9;
     vertical-align: middle;
 }

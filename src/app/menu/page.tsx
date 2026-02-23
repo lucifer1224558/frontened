@@ -9,6 +9,8 @@ export default function MenuPage() {
     const { items, categories, isLoading, error, addItem, updateItem, deleteItem, refreshItems } = useMenu();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<Item | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
 
     // Form State
     const [formData, setFormData] = useState({
@@ -45,12 +47,19 @@ export default function MenuPage() {
         };
 
         if (editingItem) {
-            updateItem({ ...itemData, id: editingItem.id });
+            updateItem({ ...itemData, _id: editingItem._id });
         } else {
             addItem(itemData);
         }
         setIsModalOpen(false);
     };
+
+    const filteredItems = items.filter(item => {
+        const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.category.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+    });
 
     return (
         <div className="menu-page-container">
@@ -59,6 +68,27 @@ export default function MenuPage() {
                 <div className="menu-header-info">
                     <h1>Menu Items</h1>
                     <p>Manage your restaurant menu items and prices</p>
+                </div>
+                <div className="menu-search-bar">
+                    <span className="search-icon">🔍</span>
+                    <input
+                        type="text"
+                        placeholder="Search dishes..."
+                        className="search-input"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <div className="menu-category-filter">
+                    <select
+                        className="category-select"
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                    >
+                        {categories.map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                    </select>
                 </div>
                 <div className="menu-header-actions">
                     <button
@@ -125,8 +155,8 @@ export default function MenuPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                items.map((item) => (
-                                    <tr key={item.id}>
+                                filteredItems.map((item) => (
+                                    <tr key={item._id}>
                                         <td>
                                             <span className="item-name">{item.name}</span>
                                         </td>
@@ -147,7 +177,7 @@ export default function MenuPage() {
                                                 <button
                                                     className="btn-icon btn-icon-delete"
                                                     onClick={() => {
-                                                        if (confirm('Delete this item?')) deleteItem(item.id);
+                                                        if (confirm('Delete this item?')) deleteItem(item._id);
                                                     }}
                                                 >
                                                     <span>🗑️</span>

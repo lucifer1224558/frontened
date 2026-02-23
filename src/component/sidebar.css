@@ -6,13 +6,11 @@
     justify-content: space-between;
     background: linear-gradient(90deg, #0F172A 0%, #1E293B 100%);
     color: #FFFFFF;
-    padding: 16px 32px;
-    border-radius: 2rem;
+    padding: 12px 24px;
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
-    height: 80px;
+    height: 64px;
     width: 100%;
     transition: all 0.3s ease;
-    margin-bottom: 8px;
 }
 
 .navbar-left,
@@ -31,25 +29,26 @@
 
 .brand-icon-container {
     display: flex;
-    height: 44px;
-    width: 44px;
+    height: 36px;
+    width: 36px;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
+    border-radius: 10px;
     background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
-    box-shadow: 0 8px 16px -4px rgba(249, 115, 22, 0.4);
+    box-shadow: 0 6px 12px -3px rgba(249, 115, 22, 0.3);
 }
 
 .brand-icon {
-    font-size: 24px;
+    font-size: 20px;
 }
 
 .brand-name {
-    font-size: 20px;
-    font-weight: 900;
-    letter-spacing: -0.05em;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
     background: linear-gradient(to right, #FFFFFF, #94A3B8);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -58,6 +57,60 @@
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.nav-group {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-arrow {
+    font-size: 8px;
+    margin-left: 4px;
+    transition: transform 0.3s ease;
+    opacity: 0.6;
+}
+
+.arrow-up {
+    transform: rotate(180deg);
+}
+
+.sub-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #1E293B;
+    border-radius: 12px;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    gap: 4px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 100;
+    margin-top: 8px;
+}
+
+.sub-nav-item {
+    padding: 10px 16px;
+    border-radius: 8px;
+    color: #94A3B8;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.sub-nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #FFFFFF;
+}
+
+.sub-nav-active {
+    background: rgba(249, 115, 22, 0.1);
+    color: #F97316 !important;
 }
 
 .nav-item {

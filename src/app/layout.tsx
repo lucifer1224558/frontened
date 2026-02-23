@@ -19,13 +19,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={outfit.className}>
         <CartProvider>
           <MenuProvider>
-            <div className="flex flex-col h-screen overflow-hidden bg-[#F4F7F9] p-4 gap-4">
+            <div className="flex flex-col h-screen overflow-hidden bg-[#F4F7F9] p-3 gap-4">
               <Sidebar />
-              <main className="flex-1 overflow-y-auto bg-white rounded-[2rem] shadow-sm border border-black/5 p-8 min-w-0">
+              <main className="flex-1 overflow-y-auto bg-white rounded-[2rem] shadow-sm border border-black/5 p-6 min-w-0">
                 {children}
               </main>
             </div>

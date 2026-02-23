@@ -9,16 +9,25 @@ import './dashboard.css';
 
 export default function DashboardPage() {
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [dineType, setDineType] = useState('Dine In');
+    const [tableNo, setTableNo] = useState('1');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showTableGrid, setShowTableGrid] = useState(true);
     const { items, categories } = useMenu();
-    const { cart, addToCart, removeFromCart, updateQuantity, saveBill, editingBillId, clearCart } = useCart();
+    const { cart, addToCart, removeFromCart, updateQuantity, saveBill, placeOrder, editingBillId, clearCart } = useCart();
 
     const subtotal = cart.reduce((sum: number, item: CartItem) => sum + (item.price * item.quantity), 0);
     const taxes = subtotal * 0.05; // 5% GST
     const total = subtotal + taxes;
 
-    const handleKOT = () => {
-        saveBill('#ORD-1234', 'Table 04');
-        alert(editingBillId ? 'Bill Updated!' : 'KOT Done! Bill generated.');
+    const handleKOT = async () => {
+        if (cart.length === 0) return;
+
+        await placeOrder({
+            dineType: dineType,
+            tableNo: dineType === 'Dine In' ? `T${tableNo}` : 'N/A',
+            paymentMethod: "Cash"
+        });
     };
 
     return (
@@ -48,11 +57,27 @@ export default function DashboardPage() {
             {/* Main Menu Section */}
             <div className="main-menu">
                 <div className="main-menu-header">
-                    <h1>Main Menu</h1>
-                    <p>Select items to add to the current order</p>
+                    <div className="header-info">
+                        <h1>Main Menu</h1>
+                        <p>Select items to add to the current order</p>
+                    </div>
+                    <div className="menu-search">
+                        <span className="search-icon">🔍</span>
+                        <input
+                            type="text"
+                            placeholder="Search dishes..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="menu-search-input"
+                        />
+                    </div>
                 </div>
 
-                <Display selectedCategory={selectedCategory} onAddToCart={addToCart} />
+                <Display
+                    selectedCategory={selectedCategory}
+                    searchTerm={searchTerm}
+                    onAddToCart={addToCart}
+                />
             </div>
 
             {/* Order Summary Sidebar */}
@@ -62,9 +87,56 @@ export default function DashboardPage() {
                         <h2>Current Order</h2>
                         <span className="order-no">#ORD-2024</span>
                     </div>
+                    <div className="order-type-selector-wrapper">
+                        <div className="order-type-icon">
+                            {dineType === 'Dine In' && '🍽️'}
+                            {dineType === 'Takeaway' && '🛍️'}
+                            {dineType === 'Delivery' && '🛵'}
+                        </div>
+                        <select
+                            className="order-type-dropdown"
+                            value={dineType}
+                            onChange={(e) => setDineType(e.target.value)}
+                        >
+                            <option value="Dine In">Dine In</option>
+                            <option value="Takeaway">Takeaway</option>
+                            <option value="Delivery">Delivery</option>
+                        </select>
+                    </div>
+
+                    {dineType === 'Dine In' && (
+                        <div className="table-selector-container">
+                            <div className="table-header-row">
+                                <span className="selector-label">Select Table</span>
+                                <button
+                                    className="btn-toggle-grid"
+                                    onClick={() => setShowTableGrid(!showTableGrid)}
+                                >
+                                    {showTableGrid ? 'Hide' : 'Show'}
+                                </button>
+                            </div>
+
+                            {showTableGrid && (
+                                <div className="table-grid-mini">
+                                    {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+                                        <button
+                                            key={num}
+                                            className={`table-mini-btn ${tableNo === num.toString() ? 'table-mini-btn-active' : ''}`}
+                                            onClick={() => setTableNo(num.toString())}
+                                        >
+                                            {num}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     <div className="order-status">
                         <span className="status-dot-active"></span>
-                        <span className="status-text-active">Dine-in / Table 04</span>
+                        <span className="status-text-active">
+                            {dineType} {dineType === 'Dine In' ? `/ Table ${tableNo.padStart(2, '0')}` : ''}
+                        </span>
                     </div>
 
                     {editingBillId && (
@@ -85,7 +157,7 @@ export default function DashboardPage() {
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                             {cart.map((item: CartItem) => (
-                                <div key={item.id} className="cart-item">
+                                <div key={item._id} className="cart-item">
                                     <div className="cart-item-info">
                                         <p className="cart-item-name">{item.name}</p>
                                         <div className="cart-item-prices">
@@ -97,17 +169,17 @@ export default function DashboardPage() {
                                         <div className="quantity-control">
                                             <button
                                                 className="qty-btn"
-                                                onClick={() => updateQuantity(item.id, -1)}
+                                                onClick={() => updateQuantity(item._id, -1)}
                                             >-</button>
                                             <span className="qty-value">{item.quantity}</span>
                                             <button
                                                 className="qty-btn"
-                                                onClick={() => updateQuantity(item.id, 1)}
+                                                onClick={() => updateQuantity(item._id, 1)}
                                             >+</button>
                                         </div>
                                         <button
                                             className="remove-btn"
-                                            onClick={() => removeFromCart(item.id)}
+                                            onClick={() => removeFromCart(item._id)}
                                         >
                                             🗑️
                                         </button>

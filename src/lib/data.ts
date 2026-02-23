@@ -34,10 +34,11 @@ export const categories = [
     'All',
     'North Indian',
     'South Indian',
-    'Cheese',
+    'Chinese',
     'Snacks',
     'Sweets',
-    'Good Morning'
+    'Beverages',
+    'Good Morning Menu'
 ];
 
 export const externalOrders: any[] = [
