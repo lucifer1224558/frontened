@@ -24,9 +24,9 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-    const [cart, setCart] = useState<CartItem[]>([]);
-    const [bills, setBills] = useState<Bill[]>([]);
-    const [paidBills, setPaidBills] = useState<Bill[]>([]);
+    const [cart, setCart] = useState<any>([]);
+    const [bills, setBills] = useState<any>([]);
+    const [paidBills, setPaidBills] = useState<any>([]);
     const [editingBillId, setEditingBillId] = useState<string | null>(null);
 
     // Fetch bills from API on mount
@@ -62,7 +62,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const addToCart = (item: any) => {
-        setCart(prevCart => {
+        setCart((prevCart: CartItem[]) => {
             const existingItem = prevCart.find(i => i._id === item._id);
             if (existingItem) {
                 return prevCart.map(i =>
@@ -74,11 +74,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     };
 
     const removeFromCart = (id: string) => {
-        setCart(prevCart => prevCart.filter(item => item._id !== id));
+        setCart((prevCart: CartItem[]) => prevCart.filter(item => item._id !== id));
     };
 
     const updateQuantity = (id: string, delta: number) => {
-        setCart(prevCart => prevCart.map(item => {
+        setCart((prevCart: CartItem[]) => prevCart.map(item => {
             if (item._id === id) {
                 const newQty = Math.max(1, item.quantity + delta);
                 return { ...item, quantity: newQty };
@@ -93,25 +93,33 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     };
 
     const editBill = (bill: Bill) => {
-        setCart(bill.items);
-        setEditingBillId(bill.id);
+        const mappedItems: CartItem[] = bill.items.map(item => ({
+            _id: item.itemId,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            // category and image are now optional, so they can be omitted or undefined
+        }));
+        setCart(mappedItems);
+        setEditingBillId(bill._id || bill.id || null);
     };
 
     const saveBill = (orderNo: string, tableNo: string) => {
         if (cart.length === 0) return;
 
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const subtotal = cart.reduce((sum: number, item: CartItem) => sum + (item.price * item.quantity), 0);
         const taxes = subtotal * 0.05;
         const total = subtotal + taxes;
 
         if (editingBillId) {
-            setBills(prevBills => prevBills.map(b =>
+            setBills((prevBills: Bill[]) => prevBills.map(b =>
                 b.id === editingBillId
                     ? { ...b, items: [...cart], subtotal, taxes, total, timestamp: new Date().toISOString() }
                     : b
             ));
         } else {
             const newBill: Bill = {
+                _id: Date.now().toString(),
                 id: Date.now().toString(),
                 items: [...cart],
                 subtotal,
@@ -119,9 +127,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 total,
                 timestamp: new Date().toISOString(),
                 orderNo,
-                tableNo
+                tableNo,
+                dineType: 'Dine In', // Providing defaults to match Bill type
+                totalAmount: total,
+                gst: 5,
+                discount: 0,
+                paymentMethod: 'Cash'
             };
-            setBills(prevBills => [newBill, ...prevBills]);
+            setBills((prevBills: Bill[]) => [newBill, ...prevBills]);
         }
 
         clearCart();
@@ -130,12 +143,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const placeOrder = async (orderData: { dineType: string; tableNo: string; paymentMethod: string }) => {
         if (cart.length === 0) return;
 
-        const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const totalAmount = cart.reduce((sum: number, item: CartItem) => sum + (item.price * item.quantity), 0);
 
         const payload = {
             dineType: orderData.dineType,
             tableNo: orderData.tableNo,
-            items: cart.map(item => ({
+            items: cart.map((item: CartItem) => ({
                 itemId: item._id, // Using correct _id from backend
                 name: item.name,
                 price: item.price,
@@ -184,7 +197,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             }
 
             // Update local state
-            setBills(prevBills => prevBills.filter(b => (b._id || b.id) !== id));
+            setBills((prevBills: Bill[]) => prevBills.filter((b: Bill) => (b._id || b.id) !== id));
             alert('Bill deleted successfully');
         } catch (err) {
             console.error('Error deleting bill:', err);
@@ -205,7 +218,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             }
 
             // Update local state and history
-            setBills(prevBills => prevBills.map(b =>
+            setBills((prevBills: Bill[]) => prevBills.map((b: Bill) =>
                 (b._id || b.id) === id ? { ...b, billed: true } : b
             ));
             refreshPaidBills();
