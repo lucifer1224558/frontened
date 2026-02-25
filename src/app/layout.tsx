@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/component/sidebar";
-import Header from "@/component/header";
+import Sidebar from "../component/sidebar";
+import Header from "../component/header";
 import { CartProvider } from "@/context/CartContext";
 import { MenuProvider } from "@/context/MenuContext";
 
