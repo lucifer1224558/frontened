@@ -2,7 +2,7 @@
 
 import { Item } from '@/lib/types';
 import { useMenu } from '@/context/MenuContext';
-import '../../app/dashboard/dashboard.css';
+import '@/app/dashboard/dashboard.css';
 
 interface DisplayProps {
     selectedCategory: string;

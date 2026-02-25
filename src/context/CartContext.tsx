@@ -32,29 +32,34 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     // Fetch bills from API on mount
     const refreshBills = async () => {
         try {
+            if (typeof window === "undefined") return;
+    
             const response = await fetch(API_ENDPOINTS.BILLINGS);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch bills: ${response.statusText}`);
-            }
+            if (!response.ok) return;
+    
             const data = await response.json();
-            setBills(data);
+            setBills(Array.isArray(data) ? data : []);
         } catch (err) {
-            console.error('Error fetching bills:', err);
+            console.error("Error fetching bills:", err);
+            setBills([]);
         }
     };
-
+    
     const refreshPaidBills = async () => {
         try {
+            if (typeof window === "undefined") return;
+    
             const response = await fetch(API_ENDPOINTS.PAID_BILLINGS);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch paid bills: ${response.statusText}`);
-            }
+            if (!response.ok) return;
+    
             const data = await response.json();
-            setPaidBills(data);
+            setPaidBills(Array.isArray(data) ? data : []);
         } catch (err) {
-            console.error('Error fetching paid bills:', err);
+            console.error("Error fetching paid bills:", err);
+            setPaidBills([]);
         }
     };
+    
 
     useEffect(() => {
         refreshBills();

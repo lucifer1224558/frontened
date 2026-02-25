@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useMenu } from '@/context/MenuContext';
 import { useCart } from '@/context/CartContext';
 import { Item, CartItem } from '@/lib/types';
-import Display from "../../component/dashboard/display";
+import Display from "@/component/dashboard/display";
 import './dashboard.css';
 
 export default function DashboardPage() {
