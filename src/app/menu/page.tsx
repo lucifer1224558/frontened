@@ -31,8 +31,8 @@ export default function MenuPage() {
         setFormData({
             name: item.name,
             price: item.price.toString(),
-            category: item.category,
-            image: item.image
+            category: item.category || 'North Indian',
+            image: item.image || '🥘'
         });
         setIsModalOpen(true);
     };
@@ -55,9 +55,10 @@ export default function MenuPage() {
     };
 
     const filteredItems = items.filter(item => {
+        const itemCategory = item.category || 'Uncategorized';
         const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.category.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+            itemCategory.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory === 'All' || itemCategory === selectedCategory;
         return matchesSearch && matchesCategory;
     });
 
@@ -161,7 +162,7 @@ export default function MenuPage() {
                                             <span className="item-name">{item.name}</span>
                                         </td>
                                         <td>
-                                            <span className="item-category">{item.category}</span>
+                                            <span className="item-category">{item.category || 'Uncategorized'}</span>
                                         </td>
                                         <td>
                                             <span className="item-price">₹{item.price.toFixed(2)}</span>

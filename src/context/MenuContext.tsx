@@ -50,7 +50,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
             if (savedItems) {
                 setItems(JSON.parse(savedItems));
             } else {
-                setItems(initialItems);
+                setItems([]);
             }
         } finally {
             setIsLoading(false);

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/component/Sidebar";
-import Header from "@/component/Header";
+import Sidebar from "@/component/sidebar";
+import Header from "@/component/header";
 import { CartProvider } from "@/context/CartContext";
 import { MenuProvider } from "@/context/MenuContext";
 
@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={outfit.className}>
+      <body className={outfit.className} suppressHydrationWarning>
         <CartProvider>
           <MenuProvider>
             <div className="flex flex-col h-screen overflow-hidden bg-[#F4F7F9] p-3 gap-4">
