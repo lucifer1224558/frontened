@@ -2,7 +2,6 @@
 
 import { useCart } from '@/context/CartContext';
 import { useEffect, useState } from 'react';
-import '../billing.css';
 
 export default function BilledHistoryPage() {
     const { paidBills, refreshPaidBills, deleteBill } = useCart();

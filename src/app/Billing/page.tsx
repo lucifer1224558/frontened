@@ -3,7 +3,6 @@
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import './billing.css';
 
 export default function BillingPage() {
     const { bills, editBill, deleteBill, markAsBilled } = useCart();
