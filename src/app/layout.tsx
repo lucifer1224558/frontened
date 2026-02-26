@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/component/sidebar";
 import Providers from "@/app/providers";
+import DashboardWrapper from "./DashboardWrapper";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -17,15 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={outfit.className}>
         <Providers>
-          <div className="flex flex-col h-screen overflow-hidden bg-[#F4F7F9] p-3 gap-4">
-            <Sidebar />
-            <main className="flex-1 overflow-y-auto bg-white rounded-[2rem] shadow-sm border border-black/5 p-6 min-w-0">
-              {children}
-            </main>
-          </div>
+          <DashboardWrapper>
+            {children}
+          </DashboardWrapper>
         </Providers>
       </body>
     </html>

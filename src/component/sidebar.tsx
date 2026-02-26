@@ -3,28 +3,36 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import './sidebar.css';
 
 export default function Sidebar() {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const pathname = usePathname();
   const router = useRouter();
+  const { user, logout } = useAuth();
 
-  const menuItems = [
-    { name: 'Dashboard', icon: '📊', path: '/dashboard' },
+  const allMenuItems = [
+    { name: 'Dashboard', icon: '📊', path: '/dashboard', roles: ['admin', 'staff', 'cashier'] },
     {
       name: 'Billing',
       icon: '🧾',
       path: '/billing',
+      roles: ['admin', 'cashier'],
       subItems: [
         { name: 'Pending Billed', path: '/billing' },
         { name: 'Billed History', path: '/billing/history' }
       ]
     },
-    { name: 'Orders', icon: '📦', path: '/orders' },
-    { name: 'Menu', icon: '🍴', path: '/menu' },
-    { name: 'SalesInsight', icon: '⚙️', path: '/sales' },
+    { name: 'Orders', icon: '📦', path: '/orders', roles: ['admin', 'staff', 'cashier'] },
+    { name: 'Menu', icon: '🍴', path: '/menu', roles: ['admin', 'staff'] },
+    { name: 'SalesInsight', icon: '⚙️', path: '/sales', roles: ['admin'] },
   ];
+
+  // Filter menu items based on user role
+  const menuItems = allMenuItems.filter(item =>
+    !item.roles || (user && item.roles.includes(user.role))
+  );
 
   const handleItemClick = (item: any) => {
     if (item.subItems) {
@@ -32,6 +40,11 @@ export default function Sidebar() {
     } else {
       router.push(item.path);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
   };
 
   return (
@@ -98,11 +111,19 @@ export default function Sidebar() {
         </div>
 
         <div className="navbar-user">
-          <div className="user-avatar">JD</div>
+          <div className="user-avatar">{user?.username.substring(0, 2).toUpperCase() || '??'}</div>
           <div className="user-info">
-            <p className="user-name">John Doe</p>
-            <p className="user-role">Admin</p>
+            <p className="user-name">{user?.username || 'Guest'}</p>
+            <p className="user-role">{user?.role || 'User'}</p>
           </div>
+          <button
+            onClick={handleLogout}
+            className="logout-button"
+            title="Logout"
+          >
+            <span className="logout-icon">🚪</span>
+            <span className="logout-text">Logout</span>
+          </button>
         </div>
       </div>
     </nav>

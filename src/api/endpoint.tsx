@@ -7,4 +7,8 @@ export const API_ENDPOINTS = {
     BILLINGS: `${BASE_URL}/billings`,
     PAID_BILLINGS: `${BASE_URL}/billings/paid`,
     CATEGORIES: `${BASE_URL}/categories`,
+    AUTH: {
+        LOGIN: `${BASE_URL}/auth/login`,
+        REGISTER: `${BASE_URL}/auth/register`,
+    },
 };

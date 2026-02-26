@@ -54,3 +54,19 @@ export interface ExternalOrder {
     customerPhone: string;
     address?: string;
 }
+
+export type UserRole = 'admin' | 'staff' | 'cashier';
+
+export interface User {
+    _id: string;
+    username: string;
+    role: UserRole;
+}
+
+export interface AuthResponse {
+    status: string;
+    token: string;
+    data: {
+        user: User;
+    };
+}
