@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CartItem, Bill } from '@/lib/types';
 import { API_ENDPOINTS } from '@/api/endpoint';
+import { useAuth } from './AuthContext';
 
 interface CartContextType {
     cart: CartItem[];
@@ -28,15 +29,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const [bills, setBills] = useState<any>([]);
     const [paidBills, setPaidBills] = useState<any>([]);
     const [editingBillId, setEditingBillId] = useState<string | null>(null);
+    const { user, token } = useAuth();
 
     // Fetch bills from API on mount
     const refreshBills = async () => {
         try {
             if (typeof window === "undefined") return;
-    
-            const response = await fetch(API_ENDPOINTS.BILLINGS);
+
+            const response = await fetch(API_ENDPOINTS.BILLINGS, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (!response.ok) return;
-    
+
             const data = await response.json();
             setBills(Array.isArray(data) ? data : []);
         } catch (err) {
@@ -44,14 +50,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             setBills([]);
         }
     };
-    
+
     const refreshPaidBills = async () => {
         try {
             if (typeof window === "undefined") return;
-    
-            const response = await fetch(API_ENDPOINTS.PAID_BILLINGS);
+
+            const response = await fetch(API_ENDPOINTS.PAID_BILLINGS, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (!response.ok) return;
-    
+
             const data = await response.json();
             setPaidBills(Array.isArray(data) ? data : []);
         } catch (err) {
@@ -59,12 +69,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             setPaidBills([]);
         }
     };
-    
+
 
     useEffect(() => {
-        refreshBills();
-        refreshPaidBills();
-    }, []);
+        if (user) {
+            refreshBills();
+            refreshPaidBills();
+        } else {
+            setBills([]);
+            setPaidBills([]);
+        }
+    }, [user]);
 
     const addToCart = (item: any) => {
         setCart((prevCart: CartItem[]) => {
@@ -171,6 +186,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(payload),
             });
@@ -194,6 +210,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         try {
             const response = await fetch(`${API_ENDPOINTS.BILLINGS}/${id}`, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
 
             if (!response.ok) {
@@ -214,7 +233,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         try {
             const response = await fetch(`${API_ENDPOINTS.BILLINGS}/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ billed: true }),
             });
 

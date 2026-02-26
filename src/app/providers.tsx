@@ -2,6 +2,7 @@
 
 import { CartProvider } from "@/context/CartContext";
 import { MenuProvider } from "@/context/MenuContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function Providers({
   children,
@@ -9,8 +10,10 @@ export default function Providers({
   children: React.ReactNode;
 }) {
   return (
-    <CartProvider>
-      <MenuProvider>{children}</MenuProvider>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <MenuProvider>{children}</MenuProvider>
+      </CartProvider>
+    </AuthProvider>
   );
 }

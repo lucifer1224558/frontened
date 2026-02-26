@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Item } from '@/lib/types';
 import { items as initialItems, categories as initialCategories } from '@/lib/data';
 import { API_ENDPOINTS } from '@/api/endpoint';
+import { useAuth } from './AuthContext';
 
 interface MenuContextType {
     items: Item[];
@@ -23,12 +24,17 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     const [categories, setCategories] = useState<string[]>(initialCategories);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const { user, token } = useAuth();
 
     const fetchItems = async () => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await fetch(API_ENDPOINTS.ITEMS);
+            const response = await fetch(API_ENDPOINTS.ITEMS, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (!response.ok) {
                 throw new Error(`Failed to fetch items: ${response.statusText}`);
             }
@@ -47,8 +53,13 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
             setError(err instanceof Error ? err.message : 'An unknown error occurred');
             // Fallback to local storage or static data if API fails
             const savedItems = localStorage.getItem('pos_menu_items');
-            if (savedItems) {
-                setItems(JSON.parse(savedItems));
+            if (savedItems && savedItems !== 'undefined') {
+                try {
+                    setItems(JSON.parse(savedItems));
+                } catch (parseErr) {
+                    console.error("Failed to parse menu items from localStorage", parseErr);
+                    setItems([]);
+                }
             } else {
                 setItems([]);
             }
@@ -58,8 +69,12 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     };
 
     useEffect(() => {
-        fetchItems();
-    }, []);
+        if (user) {
+            fetchItems();
+        } else {
+            setIsLoading(false);
+        }
+    }, [user]);
 
     // Save to localStorage whenever items change
     useEffect(() => {
@@ -76,6 +91,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(newItem),
             });
@@ -100,6 +116,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(updatedItem),
             });
@@ -118,6 +135,9 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
         try {
             const response = await fetch(`${API_ENDPOINTS.ITEMS}/${id}`, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
             if (!response.ok) {
                 throw new Error(`Failed to delete item: ${response.statusText}`);
