@@ -18,19 +18,19 @@ export default function BilledHistoryPage() {
   // ✅ Safe Filtering
   const filteredHistory = Array.isArray(paidBills)
     ? paidBills.filter((bill: any) => {
-        const matchesBillNo = (bill?.orderNo || bill?._id || bill?.id || "")
-          .toString()
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+      const matchesBillNo = (bill?.orderNo || bill?._id || bill?.id || "")
+        .toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
-        const billDate = bill?.createdAt
-          ? new Date(bill.createdAt).toISOString().split("T")[0]
-          : "";
+      const billDate = bill?.createdAt
+        ? new Date(bill.createdAt).toISOString().split("T")[0]
+        : "";
 
-        const matchesDate = searchDate ? billDate === searchDate : true;
+      const matchesDate = searchDate ? billDate === searchDate : true;
 
-        return matchesBillNo && matchesDate;
-      })
+      return matchesBillNo && matchesDate;
+    })
     : [];
 
   const handleDelete = (id: string) => {
@@ -55,6 +55,7 @@ export default function BilledHistoryPage() {
 
         <div className="billing-search-group">
           <div className="search-input-wrapper">
+            <span className="search-icon">🔍</span>
             <input
               type="text"
               placeholder="Search Bill No..."
@@ -81,7 +82,7 @@ export default function BilledHistoryPage() {
                 setSearchDate("");
               }}
             >
-              Clear
+              Clear Filters
             </button>
           )}
         </div>
@@ -90,60 +91,102 @@ export default function BilledHistoryPage() {
       <div className="bills-grid">
         {filteredHistory.length === 0 ? (
           <div className="empty-bills">
-            <p>
+            <div style={{ fontSize: '60px', marginBottom: '16px' }}>📚</div>
+            <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#1E293B' }}>
               {searchTerm || searchDate
                 ? "No results match your search"
                 : "No billed history found"}
+            </p>
+            <p style={{ marginTop: '4px' }}>
+              {searchTerm || searchDate ? "Try adjusting your filters." : "Settled bills will appear here."}
             </p>
           </div>
         ) : (
           filteredHistory.map((bill: any) => (
             <div key={bill?._id || bill?.id} className="bill-card">
+              <div className="bill-accent"></div>
+
               <div className="bill-header-row">
-                <div>
-                  <strong>
-                    #{bill?.orderNo || bill?._id?.slice(-6) || "N/A"}
-                  </strong>
-                  <div>
-                    {bill?.createdAt
-                      ? new Date(bill.createdAt).toLocaleString()
-                      : "N/A"}
+                <div className="order-info">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <span className="order-no-text">#{bill?.orderNo || (bill?._id ? bill?._id.slice(-6).toUpperCase() : 'N/A')}</span>
+                    {bill?.dineType && (
+                      <span style={{
+                        fontSize: '10px',
+                        fontWeight: '800',
+                        color: '#f97316',
+                        backgroundColor: '#fff7ed',
+                        padding: '2px 8px',
+                        borderRadius: '6px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em'
+                      }}>
+                        {bill.dineType}
+                      </span>
+                    )}
+                  </div>
+                  <div className="timestamp-row">
+                    <span>📅</span>
+                    <span>{bill?.createdAt ? new Date(bill.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
+                    <span style={{ opacity: 0.3 }}>•</span>
+                    <span>{bill?.createdAt ? new Date(bill.createdAt).toLocaleDateString() : 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="table-badge">
+                  <span className="table-badge-label">Table</span>
+                  <span className="table-no-text">{bill?.tableNo || 'N/A'}</span>
+                  <div className="billed-sticker">BILLED</div>
+                </div>
+              </div>
+
+              <div className="bill-items-section">
+                <h4 className="section-label">Items Ordered</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {(bill?.items || []).map((item: any, idx: number) => (
+                    <div key={idx} className="bill-item-row">
+                      <div className="item-main">
+                        <span className="item-qty-badge">x{item?.quantity}</span>
+                        <span className="item-name-text">{item?.name}</span>
+                      </div>
+                      <span className="item-price-text">₹{(item?.price * item?.quantity || 0).toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bill-totals-section">
+                <div className="totals-card">
+                  <div className="total-row">
+                    <span>Payment Method</span>
+                    <span style={{ fontWeight: 'bold', color: '#1E293B' }}>{bill?.paymentMethod || 'Cash'}</span>
+                  </div>
+                  <div className="total-row">
+                    <span>GST</span>
+                    <span>{bill?.gst || 18}%</span>
+                  </div>
+                  <div className="grand-total-row">
+                    <span>Total Amount</span>
+                    <span className="grand-total-value">₹{(bill?.totalAmount || bill?.total || 0).toFixed(2)}</span>
                   </div>
                 </div>
 
-                <div>
-                  <span>Table: {bill?.tableNo || "N/A"}</span>
+                <div className="bill-actions">
+                  <button
+                    className="btn-billing-print"
+                    style={{ gridColumn: 'span 2' }}
+                    onClick={handlePrint}
+                  >
+                    <span>🖨️</span>
+                    Reprint Bill
+                  </button>
+                  <button
+                    className="btn-billing-delete"
+                    onClick={() => handleDelete((bill?._id || bill?.id || "").toString())}
+                  >
+                    <span>🗑️</span>
+                    Delete
+                  </button>
                 </div>
-              </div>
-
-              {/* ✅ Safe Items Mapping */}
-              <div>
-                {(bill?.items || []).map((item: any, idx: number) => (
-                  <div key={idx}>
-                    {item?.quantity} x {item?.name} — ₹
-                    {(item?.price * item?.quantity || 0).toFixed(2)}
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <div>Payment: {bill?.paymentMethod || "Cash"}</div>
-                <div>GST: {bill?.gst || 18}%</div>
-                <div>
-                  Total: ₹
-                  {(bill?.totalAmount || bill?.total || 0).toFixed(2)}
-                </div>
-              </div>
-
-              <div>
-                <button onClick={handlePrint}>Reprint</button>
-                <button
-                  onClick={() =>
-                    handleDelete((bill?._id || bill?.id || "").toString())
-                  }
-                >
-                  Delete
-                </button>
               </div>
             </div>
           ))

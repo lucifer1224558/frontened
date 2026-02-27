@@ -182,8 +182,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         };
 
         try {
-            const response = await fetch(API_ENDPOINTS.BILLINGS, {
-                method: 'POST',
+            const url = editingBillId
+                ? `${API_ENDPOINTS.BILLINGS}/${editingBillId}`
+                : API_ENDPOINTS.BILLINGS;
+            const method = editingBillId ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
