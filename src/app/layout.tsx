@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "@/app/providers";
 import DashboardWrapper from "./DashboardWrapper";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -27,6 +28,7 @@ export default function RootLayout({
           </DashboardWrapper>
         </Providers>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
