@@ -14,7 +14,19 @@ export default function DashboardPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [showTableGrid, setShowTableGrid] = useState(true);
     const { items, categories } = useMenu();
-    const { cart, addToCart, removeFromCart, updateQuantity, saveBill, placeOrder, editingBillId, clearCart } = useCart();
+    const { cart, bills, addToCart, removeFromCart, updateQuantity, saveBill, placeOrder, editingBillId, clearCart } = useCart();
+
+    // Identify occupied tables (pending Dine In bills)
+    const occupiedTables = bills
+        .filter(bill => !bill.billed && bill.dineType === 'Dine In')
+        .map(bill => bill.tableNo?.replace('T', '')); // Strip 'T' prefix to match number
+
+    const currentTableFullNo = dineType === 'Dine In' ? `T${tableNo}` : 'N/A';
+
+    // Check if current selection is occupied by a DIFFERENT bill
+    const isOccupiedByOther = dineType === 'Dine In' &&
+        occupiedTables.includes(tableNo) &&
+        !bills.some(bill => !bill.billed && bill.tableNo === currentTableFullNo && (bill._id || bill.id) === editingBillId);
 
     const subtotal = cart.reduce((sum: number, item: CartItem) => sum + (item.price * item.quantity), 0);
     const taxes = subtotal * 0.05; // 5% GST
@@ -23,9 +35,14 @@ export default function DashboardPage() {
     const handleKOT = async () => {
         if (cart.length === 0) return;
 
+        if (isOccupiedByOther && !editingBillId) {
+            alert(`Table ${tableNo} is already occupied with a pending bill. Please settle it or select another table.`);
+            return;
+        }
+
         await placeOrder({
             dineType: dineType,
-            tableNo: dineType === 'Dine In' ? `T${tableNo}` : 'N/A',
+            tableNo: currentTableFullNo,
             paymentMethod: "Cash"
         });
     };
@@ -118,15 +135,23 @@ export default function DashboardPage() {
 
                             {showTableGrid && (
                                 <div className="table-grid-mini">
-                                    {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
-                                        <button
-                                            key={num}
-                                            className={`table-mini-btn ${tableNo === num.toString() ? 'table-mini-btn-active' : ''}`}
-                                            onClick={() => setTableNo(num.toString())}
-                                        >
-                                            {num}
-                                        </button>
-                                    ))}
+                                    {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => {
+                                        const numStr = num.toString();
+                                        const isOccupied = occupiedTables.includes(numStr);
+                                        const isSelected = tableNo === numStr;
+
+                                        return (
+                                            <button
+                                                key={num}
+                                                className={`table-mini-btn ${isSelected ? 'table-mini-btn-active' : ''} ${isOccupied ? 'table-mini-occupied' : ''}`}
+                                                onClick={() => setTableNo(numStr)}
+                                                title={isOccupied ? 'Table Occupied' : `Table ${numStr}`}
+                                            >
+                                                {num}
+                                                {isOccupied && <span className="occupied-dot"></span>}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
@@ -211,10 +236,10 @@ export default function DashboardPage() {
                         <button className="btn-hold">Hold</button>
                         <button
                             className="btn-order"
-                            disabled={cart.length === 0}
+                            disabled={cart.length === 0 || (isOccupiedByOther && !editingBillId)}
                             onClick={handleKOT}
                         >
-                            {editingBillId ? 'UPDATE ORDER' : 'PLACE ORDER'}
+                            {editingBillId ? 'UPDATE ORDER' : isOccupiedByOther ? 'TABLE OCCUPIED' : 'PLACE ORDER'}
                         </button>
                     </div>
                 </div>
