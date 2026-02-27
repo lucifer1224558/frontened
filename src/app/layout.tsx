@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import Providers from "@/app/providers";
 import DashboardWrapper from "./DashboardWrapper";
+import { Analytics } from "@vercel/analytics/next";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -19,11 +20,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={outfit.className}>
+
         <Providers>
           <DashboardWrapper>
             {children}
           </DashboardWrapper>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
